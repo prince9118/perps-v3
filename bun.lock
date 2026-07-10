@@ -5,6 +5,7 @@
     "": {
       "name": "perps-v3",
       "devDependencies": {
+        "@types/bun": "latest",
         "prettier": "^3.7.4",
         "turbo": "^2.10.3",
         "typescript": "5.9.2",
