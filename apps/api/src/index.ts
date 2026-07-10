@@ -1,0 +1,69 @@
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({
+  path: path.resolve(import.meta.dir, "../../../.env")
+});
+import cors from "cors";
+import { z } from "zod";
+import bcrypt from "bcrypt";
+import { prisma } from "@repo/db";
+import express from "express";
+const app = express();
+app.use(cors());
+
+app.use(express.json());
+const port = process.env.PORT;
+
+const signUpSchema = z.object({
+  email: z.email(),
+  password: z.string().min(4)
+});
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "backend is working"
+  });
+});
+
+app.post("auth/signup", async (req, res) => {
+  const result = signUpSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      error: result.error.flatten()
+    });
+  }
+  const { email, password } = req.body;
+  if (!(email || password)) {
+    return res.status(400).json({
+      message: "Email and Password are required!"
+    });
+  }
+  const existingUser = await prisma.user.findMany({
+    where: { email }
+  });
+  if (existingUser) {
+    return res.status(400).json({
+      message: "User Already Exist"
+    });
+  }
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      passwordHash
+    },
+    select: {
+      id: true,
+      email: true,
+      createdAt: true
+    }
+  });
+  res.json({
+    success: true,
+    user
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Backend is working on port ${port}`);
+});
