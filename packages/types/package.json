@@ -1,7 +1,7 @@
 {
   "name":"@repo/types",
   "module": "index.ts",
-   "main":"src/index.ts",
+  "main":"src/index.ts",
   "type": "module",
   "private": true,
   "devDependencies": {
