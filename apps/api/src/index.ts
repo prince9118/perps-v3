@@ -117,7 +117,7 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
   });
 });
 
-//wallet , market , order,trades, positions
+
 
 app.listen(port, () => {
   console.log(`Backend is working on port ${port}`);
