@@ -118,14 +118,6 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
 });
 
 
-
-
-
-
-
-
-
-
 app.listen(port, () => {
   console.log(`Backend is working on port ${port}`);
 });
