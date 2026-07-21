@@ -1,8 +1,4 @@
 import dotenv from "dotenv";
-import path from "path";
-dotenv.config({
-  path: path.resolve(import.meta.dir, "../../../.env")
-});
 import cors from "cors";
 import { success, z } from "zod";
 import bcrypt from "bcrypt";
@@ -12,7 +8,6 @@ import express from "express";
 import { authMiddleware } from "./middleware/auth";
 const app = express();
 app.use(cors());
-
 app.use(express.json());
 const port = process.env.PORT;
 
@@ -116,7 +111,6 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
     user
   });
 });
-
 
 app.listen(port, () => {
   console.log(`Backend is working on port ${port}`);
