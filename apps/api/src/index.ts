@@ -1,12 +1,14 @@
 import dotenv from "dotenv";
 import cors from "cors";
-import { success, z } from "zod";
+import { success, TimePrecision, z } from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "@repo/db";
+import { redis } from "@repo/redis";
 import express from "express";
 import { authMiddleware } from "./middleware/auth";
 import { signUpSchema } from "./validator/auth.validator";
+import { ordersSchema } from "./validator/orders.validator";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -113,7 +115,57 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
   });
 });
 
-// orders
+app.post("/orders", authMiddleware, async (req: any, res) => {
+  const { market, side, type, price, quantity, leverage } = req.body;
+  if (!market || !side || !type || !quantity || !leverage) {
+    return res.status(400).json({
+      message: "market,side, type,quantity and leverage is required"
+    });
+  }
+  if (type === "limit" && !price) {
+    return res.status(400).json({
+      message: "Price is required for limit order"
+    });
+  }
+  const dbOrder = await prisma.order.create({
+    data: {
+      userId: req.user.userId,
+      market,
+      side,
+      type,
+      status: "open",
+      price: type === "limit" ? price : null,
+      quantity,
+      leverage,
+      originalQuantity: quantity
+    }
+  });
+  const event = {
+    orderId: dbOrder.id,
+    userId: req.user.userId,
+    market,
+    side,
+    type,
+    price,
+    quantity,
+    leverage,
+    timestamp: Date.now()
+  };
+  const messageId = await redis.xadd(
+    "order_events",
+    "*",
+    "type",
+    "ORDER_CREATE",
+    "data",
+    JSON.stringify(event)
+  );
+  res.json({
+    success: true,
+    message: "Order Submitted",
+    order: dbOrder,
+    messageId
+  });
+});
 
 app.listen(port, () => {
   console.log(`Backend is working on port ${port}`);
