@@ -15,6 +15,7 @@ const signUpSchema = z.object({
   email: z.email(),
   password: z.string().min(4)
 });
+
 app.get("/health", (req, res) => {
   res.json({
     success: true,
@@ -45,11 +46,15 @@ app.post("/auth/signup", async (req, res) => {
   const user = await prisma.user.create({
     data: {
       email,
-      passwordHash
+      passwordHash,
+      balance: 10000,
+      lockedBalance: 0
     },
     select: {
       id: true,
       email: true,
+      balance: true,
+      lockedBalance: true,
       createdAt: true
     }
   });
@@ -113,7 +118,6 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
 });
 
 // orders
-
 
 app.listen(port, () => {
   console.log(`Backend is working on port ${port}`);
