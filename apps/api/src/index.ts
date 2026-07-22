@@ -6,15 +6,11 @@ import jwt from "jsonwebtoken";
 import { prisma } from "@repo/db";
 import express from "express";
 import { authMiddleware } from "./middleware/auth";
+import { signUpSchema } from "./validator/auth.validator";
 const app = express();
 app.use(cors());
 app.use(express.json());
 const port = process.env.PORT;
-
-const signUpSchema = z.object({
-  email: z.email(),
-  password: z.string().min(4)
-});
 
 app.get("/health", (req, res) => {
   res.json({

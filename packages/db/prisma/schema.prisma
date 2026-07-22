@@ -12,6 +12,23 @@ datasource db {
   provider = "postgresql"
 }
 
+enum OrderSide {
+  buy
+  sell
+}
+
+enum OrderType {
+  market
+  limit
+}
+
+enum OrderStatus {
+  open
+  partially_filled
+  filled
+  cancelled
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
@@ -20,6 +37,23 @@ model User {
   lockedBalance Float    @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  orders        Order[]
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [id])
+  market           String
+  side             OrderSide
+  type             OrderType
+  status           OrderStatus @default(open)
+  price            Float?
+  quantity         Float
+  originalQuantity Float       @default(0)
+  leverage         Float       @default(1)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 }
 
 // user wallet
