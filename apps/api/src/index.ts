@@ -116,55 +116,49 @@ app.get("/auth/me", authMiddleware, async (req: any, res) => {
 });
 
 app.post("/orders", authMiddleware, async (req: any, res) => {
-  const { market, side, type, price, quantity, leverage } = req.body;
-  if (!market || !side || !type || !quantity || !leverage) {
-    return res.status(400).json({
-      message: "market,side, type,quantity and leverage is required"
-    });
-  }
-  if (type === "limit" && !price) {
-    return res.status(400).json({
-      message: "Price is required for limit order"
-    });
-  }
-  const dbOrder = await prisma.order.create({
-    data: {
+  try {
+    const parsed = ordersSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        message: "Validation error"
+      });
+    }
+    const { market, side, type, price, quantity, leverage } = req.body;
+    if (type === "limit" && !price) {
+      return res.status(400).json({
+        message: "Price is required for limit order"
+      });
+    }
+
+    const event = {
       userId: req.user.userId,
       market,
       side,
       type,
-      status: "open",
-      price: type === "limit" ? price : null,
+      price,
       quantity,
       leverage,
-      originalQuantity: quantity
-    }
-  });
-  const event = {
-    orderId: dbOrder.id,
-    userId: req.user.userId,
-    market,
-    side,
-    type,
-    price,
-    quantity,
-    leverage,
-    timestamp: Date.now()
-  };
-  const messageId = await redis.xadd(
-    "order_events",
-    "*",
-    "type",
-    "ORDER_CREATE",
-    "data",
-    JSON.stringify(event)
-  );
-  res.json({
-    success: true,
-    message: "Order Submitted",
-    order: dbOrder,
-    messageId
-  });
+      timestamp: Date.now()
+    };
+    const messageId = await redis.xadd(
+      "order_events",
+      "*",
+      "type",
+      "ORDER_CREATE",
+      "data",
+      JSON.stringify(event)
+    );
+    res.json({
+      success: true,
+      message: "Order Submitted",
+      messageId
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "Server Error"
+    });
+  }
 });
 
 app.listen(port, () => {

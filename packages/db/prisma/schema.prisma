@@ -13,20 +13,20 @@ datasource db {
 }
 
 enum OrderSide {
-  buy
-  sell
+  BUY
+  SELL
 }
 
 enum OrderType {
-  market
-  limit
+  MARKET
+  LIMIT
 }
 
 enum OrderStatus {
-  open
-  partially_filled
-  filled
-  cancelled
+  OPEN
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
 }
 
 model User {
@@ -47,7 +47,7 @@ model Order {
   market           String
   side             OrderSide
   type             OrderType
-  status           OrderStatus @default(open)
+  status           OrderStatus @default(OPEN)
   price            Float?
   quantity         Float
   originalQuantity Float       @default(0)

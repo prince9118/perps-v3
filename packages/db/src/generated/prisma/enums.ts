@@ -9,7 +9,27 @@
 * 🟢 You can import this file directly.
 */
 
+export const OrderSide = {
+  buy: 'buy',
+  sell: 'sell'
+} as const
+
+export type OrderSide = (typeof OrderSide)[keyof typeof OrderSide]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const OrderType = {
+  market: 'market',
+  limit: 'limit'
+} as const
+
+export type OrderType = (typeof OrderType)[keyof typeof OrderType]
+
+
+export const OrderStatus = {
+  open: 'open',
+  partially_filled: 'partially_filled',
+  filled: 'filled',
+  cancelled: 'cancelled'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
