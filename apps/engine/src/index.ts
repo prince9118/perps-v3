@@ -1,5 +1,8 @@
 import { redis } from "@repo/redis";
-import { OrderBook, type EngineOrder } from "./orderBook";
+import { OrderBook } from "./orderBook";
+import { type EngineOrder } from "@repo/types";
+
+const orderBooks = new Map<string, OrderBook>();
 function parseRedisFields(fields: string[]) {
   const obj: Record<string, string> = {};
 
@@ -10,6 +13,12 @@ function parseRedisFields(fields: string[]) {
     obj[key] = value;
   }
   return obj;
+}
+function getOrderBook(market: string) {
+  if (!orderBooks.has(market)) {
+    orderBooks.set(market, new OrderBook());
+  }
+  return orderBooks.get(market)!;
 }
 
 async function main() {
@@ -45,6 +54,12 @@ async function main() {
           status: "OPEN",
           createdAt: event.data.timestamp
         };
+        const book = getOrderBook(order.market);
+        if (order.type === "LIMIT") {
+          book.addorder(order);
+        } else {
+          //, type ==== "Market"
+        }
       }
     }
   }
