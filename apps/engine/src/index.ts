@@ -1,6 +1,6 @@
 import { redis } from "@repo/redis";
 import { OrderBook } from "./orderBook";
-import { type EngineOrder } from "@repo/types";
+import { type EngineOrder, type EngineFill } from "@repo/types";
 
 const orderBooks = new Map<string, OrderBook>();
 function parseRedisFields(fields: string[]) {
@@ -57,6 +57,7 @@ async function main() {
         const book = getOrderBook(order.market);
         if (order.type === "LIMIT") {
           book.addorder(order);
+          
         } else {
           //, type ==== "Market"
         }
