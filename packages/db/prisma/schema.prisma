@@ -56,4 +56,18 @@ model Order {
   updatedAt        DateTime    @updatedAt
 }
 
+model Fill {
+  id          String   @id @default(uuid())
+  buyOrderId  String
+  sellOrderId String
+  buyerId     String
+  sellerId    String
+  market      String
+  price       Float
+  quantity    Float
+  buyerFee    Float    @default(0)
+  sellerFee   Float    @default(0)
+  createdAt   DateTime @default(now())
+}
+
 // user wallet
