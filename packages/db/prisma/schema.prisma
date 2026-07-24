@@ -24,7 +24,7 @@ enum OrderType {
 
 enum OrderStatus {
   OPEN
-  PARTIALLY_FILLED
+  PARTIAL
   FILLED
   CANCELLED
 }
