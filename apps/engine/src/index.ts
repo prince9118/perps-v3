@@ -30,7 +30,7 @@ async function main() {
       0,
       "STREAMS",
       "order_events",
-      "lastId"
+      lastId
     );
     if (!result) continue;
     const [streamName, messages] = result[0]!;
@@ -57,9 +57,35 @@ async function main() {
         const book = getOrderBook(order.market);
         if (order.type === "LIMIT") {
           book.addorder(order);
-          
+          const { fills, updateOrders } = book.matchOrder();
+          for (const fill of fills) {
+            await redis.xadd(
+              "trade_events",
+              "*",
+              "type",
+              "TRADE_CREATED",
+              "data",
+              JSON.stringify(fill)
+            );
+            console.log("TRADE PUBLISHED", messageId);
+          }
+          for (const updateOrder of updateOrders) {
+            await redis.xadd(
+              "order_update_event",
+              "*",
+              "type",
+              "ORDER_UPDATED",
+              "data",
+              JSON.stringify({
+                orderId: updateOrder.id,
+                status: updateOrder.status,
+                quantity: updateOrder.quantity
+              })
+            );
+            console.log("Order updated Published", messageId);
+          }
         } else {
-          //, type ==== "Market"
+          //order.type=== "MARKET"
         }
       }
     }
