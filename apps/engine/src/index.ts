@@ -69,21 +69,6 @@ async function main() {
             );
             console.log("TRADE PUBLISHED", messageId);
           }
-          for (const updateOrder of updateOrders) {
-            await redis.xadd(
-              "order_update_event",
-              "*",
-              "type",
-              "ORDER_UPDATED",
-              "data",
-              JSON.stringify({
-                orderId: updateOrder.id,
-                status: updateOrder.status,
-                quantity: updateOrder.quantity
-              })
-            );
-            console.log("Order updated Published", messageId);
-          }
         } else {
           //order.type=== "MARKET"
         }
