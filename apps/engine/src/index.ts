@@ -67,10 +67,10 @@ async function main() {
               "data",
               JSON.stringify(fill)
             );
-            console.log("TRADE PUBLISHED", messageId);
+            console.log("TRADE PUBLISH", messageId);
           }
         } else {
-          //order.type=== "MARKET"
+          // order.type === "MARKET";
         }
       }
     }
