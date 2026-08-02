@@ -69,3 +69,5 @@ model Fill {
   sellerFee   Float    @default(0)
   createdAt   DateTime @default(now())
 }
+
+// positions
