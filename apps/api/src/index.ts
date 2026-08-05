@@ -9,10 +9,11 @@ import express from "express";
 import { authMiddleware } from "./middleware/auth";
 import { signUpSchema } from "./validator/auth.validator";
 import { ordersSchema } from "./validator/orders.validator";
+import { env } from "./config/env";
 const app = express();
 app.use(cors());
 app.use(express.json());
-const port = process.env.PORT;
+const port = env.PORT;
 
 app.get("/health", (req, res) => {
   res.json({
@@ -86,7 +87,7 @@ app.post("/auth/login", async (req, res) => {
   }
   const token = jwt.sign(
     { userId: user.id, email: user.email },
-    process.env.JWT_SECRET!,
+    env.JWT_SECRET!,
     { expiresIn: "7d" }
   );
   res.json({
