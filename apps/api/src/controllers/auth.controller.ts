@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { signUpSchema, signInSchema } from "../validator/auth.validator";
 import * as authService from "../services/auth.service";
-import { sign } from "jsonwebtoken";
 
 export async function signup(req: Request, res: Response) {
   const result = signUpSchema.safeParse(req.body);
