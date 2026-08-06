@@ -37,3 +37,7 @@ export async function login(req: Request, res: Response) {
 
   return res.json(response);
 }
+
+export async function me(){
+  
+}
