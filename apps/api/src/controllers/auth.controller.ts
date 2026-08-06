@@ -38,6 +38,10 @@ export async function login(req: Request, res: Response) {
   return res.json(response);
 }
 
-export async function me(){
-  
+export async function me(req: Request, res: Response) {
+  const user = await authService.getCurrentUser(req.user.userId);
+  return res.json({
+    success: true,
+    user
+  });
 }

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import type { AuthPayload } from "../types/auth";
 export function authMiddleware(req: any, res: any, next: any) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -13,11 +14,8 @@ export function authMiddleware(req: any, res: any, next: any) {
     });
   }
   try {
-    const decode = jwt.verify(token, process.env.JWT_SECRET!) as {
-      userId: string;
-      email: string;
-    };
-    req.user = decode;
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as AuthPayload;
+    req.user = payload;
     next();
   } catch {
     return res.status(401).json({

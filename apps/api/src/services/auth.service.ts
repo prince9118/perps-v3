@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail, createUser } from "../repositories/user.repository";
+import {
+  findUserByEmail,
+  createUser,
+  findUserById
+} from "../repositories/user.repository";
 
 export async function signup(email: string, password: string) {
   const existingUser = await findUserByEmail(email);
@@ -47,4 +51,8 @@ export async function login(email: string, password: string) {
       email: user.email
     }
   };
+}
+
+export async function getCurrentUser(userId: string) {
+  return findUserById(userId);
 }
